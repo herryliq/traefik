@@ -553,18 +553,16 @@ func (server *Server) buildEntryPoints(globalConfiguration GlobalConfiguration) 
 // provider configurations.
 func (server *Server) loadConfig(configurations configs, globalConfiguration GlobalConfiguration) (map[string]*serverEntryPoint, error) {
 	serverEntryPoints := server.buildEntryPoints(globalConfiguration)
-	redirectHandlers := make(map[string]negroni.Handler)
-
-	backends := map[string]http.Handler{}
-
 	backendsHealthcheck := map[string]*healthcheck.BackendHealthCheck{}
-
 	backend2FrontendMap := map[string]string{}
+
 	for _, configuration := range configurations {
 		frontendNames := sortedFrontendNamesForConfig(configuration)
 	frontend:
 		for _, frontendName := range frontendNames {
+			redirectHandlers := make(map[string]negroni.Handler)
 			frontend := configuration.Frontends[frontendName]
+			backends := map[string]http.Handler{}
 
 			log.Debugf("Creating frontend %s", frontendName)
 
